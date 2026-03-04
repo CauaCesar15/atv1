@@ -1,140 +1,125 @@
+import { useState } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
+export default function Calculadora() {
 
-import { use, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity,View ,Pressable, TextInput} from "react-native";
-import { stopMapper } from "react-native-reanimated";
+  const [display, setDisplay] = useState<string>("0");
+  const [numeroAnterior, setNumeroAnterior] = useState<number | null>(null);
+  const [operacao, setOperacao] = useState<string | null>(null);
 
-export default function RootLayout() {
-	const [contador, setContador ] = useState(0)
-  const [n1,setn1]=useState('')
-   const [n2,setn2]=useState('')
-    const[display, setdisplay]=useState('0')
-     const[numeroAnterior, setnumeroAnterior]=useState('0')
-   const[valor,setvalor]=useState(0)
-    
-    
-    let resultado = 0;
-    function calculo(){
-        const atual = parseFloat(display)
-    const anterior = parseFloat(numeroAnterior)
-     let operacao
-    if (operacao === '+') resultado = anterior + atual
-    if (operacao === '-') resultado = anterior - atual
-    if (operacao === '/') resultado = anterior / atual
+  function adicionarNumero(num: string) {
+    if (display === "0") {
+      setDisplay(num);
+    } else {
+      setDisplay(display + num);
     }
-   
-  
+  }
 
-	
-	
- 
- 
-  
+  function escolherOperacao(op: string) {
+    setNumeroAnterior(parseFloat(display));
+    setOperacao(op);
+    setDisplay("0");
+  }
 
+  function calcular() {
+    if (numeroAnterior === null || operacao === null) return;
 
+    const atual = parseFloat(display);
+    let resultado = 0;
 
- 
+    if (operacao === "+") resultado = numeroAnterior + atual;
+    if (operacao === "-") resultado = numeroAnterior - atual;
+    if (operacao === "*") resultado = numeroAnterior * atual;
+    if (operacao === "/") resultado = numeroAnterior / atual;
 
+    setDisplay(resultado.toString());
+    setNumeroAnterior(null);
+    setOperacao(null);
+  }
 
+  function limpar() {
+    setDisplay("0");
+    setNumeroAnterior(null);
+    setOperacao(null);
+  }
 
+  return (
+    <View style={styles.container}>
 
+      <Text style={styles.display}>{display}</Text>
 
+      <View style={styles.linha}>
+        <Botao texto="7" onPress={() => adicionarNumero("7")} />
+        <Botao texto="8" onPress={() => adicionarNumero("8")} />
+        <Botao texto="9" onPress={() => adicionarNumero("9")} />
+        <Botao texto="/" onPress={() => escolherOperacao("/")} />
+      </View>
 
+      <View style={styles.linha}>
+        <Botao texto="4" onPress={() => adicionarNumero("4")} />
+        <Botao texto="5" onPress={() => adicionarNumero("5")} />
+        <Botao texto="6" onPress={() => adicionarNumero("6")} />
+        <Botao texto="*" onPress={() => escolherOperacao("*")} />
+      </View>
 
+      <View style={styles.linha}>
+        <Botao texto="1" onPress={() => adicionarNumero("1")} />
+        <Botao texto="2" onPress={() => adicionarNumero("2")} />
+        <Botao texto="3" onPress={() => adicionarNumero("3")} />
+        <Botao texto="-" onPress={() => escolherOperacao("-")} />
+      </View>
 
+      <View style={styles.linha}>
+        <Botao texto="0" onPress={() => adicionarNumero("0")} />
+        <Botao texto="C" onPress={limpar} />
+        <Botao texto="=" onPress={calcular} />
+        <Botao texto="+" onPress={() => escolherOperacao("+")} />
+      </View>
 
+    </View>
+  );
+}
 
-
-    
-
-
-
-
-
-
-
-	return (
-		<>
-
-
-
-              
-
-			         <View><TextInput
-        style={styles.principal}
-        placeholder="Ex: 10"
-        keyboardType="numeric"    
-          
-        value={n1}               
-      /></View>
-               <View style={styles.linha}>
-                
-			<TouchableOpacity style={styles.botao} onPress={calculo}>
-				<Text>+</Text>
-			</TouchableOpacity>
-            <TouchableOpacity style={styles.botao}  onPress={calculo}> <Text>-</Text></TouchableOpacity>
-	           <TouchableOpacity style={styles.botao} onPress={calculo}>
-              
-				<Text>:</Text>
-			</TouchableOpacity>
-      <TouchableOpacity id="1" >1</TouchableOpacity>
-       <TouchableOpacity id="2" >2</TouchableOpacity>
-        <TouchableOpacity id="3" >3</TouchableOpacity>
-         <TouchableOpacity id="4" >4</TouchableOpacity>
-          <TouchableOpacity id="5" >5</TouchableOpacity>
-           <TouchableOpacity id="6" >6</TouchableOpacity>
-            <TouchableOpacity id="7" >7</TouchableOpacity>
-             <TouchableOpacity id="8" >8</TouchableOpacity>
-              <TouchableOpacity id="9" >9</TouchableOpacity>
-               <TouchableOpacity id="0" >0</TouchableOpacity>
-			</View>
-			
-      </>
-  
-     
-		
-	);
+function Botao({ texto, onPress }: any) {
+  return (
+    <TouchableOpacity style={styles.botao} onPress={onPress}>
+      <Text style={styles.texto}>{texto}</Text>
+    </TouchableOpacity>
+  );
 }
 
 const styles = StyleSheet.create({
-botao: {
-    backgroundColor: '#A9A9A9 ',
-   
-    
-    width: 50,          
-    height: 50,         
-    borderRadius: 0,    
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'center', 
-    margin: 10,     
-	     
+
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    backgroundColor: "#fff",
   },
-  
- 
-  linha:{
 
- gap:30,
-	flexDirection:'row'
+  display: {
+    fontSize: 40,
+    textAlign: "right",
+    margin: 20,
   },
-  principal:{
-	    flex: 1,                  
-    justifyContent: 'center', 
-    alignItems: 'center',     
-    backgroundColor: '#fff',
-    padding: 20,
 
+  linha: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+  },
 
+  botao: {
+    backgroundColor: "#ddd",
+    width: 70,
+    height: 70,
+    justifyContent: "center",
+    alignItems: "center",
+    margin: 5,
+    borderRadius: 10,
+  },
 
-
-
+  texto: {
+    fontSize: 24,
+    fontWeight: "bold",
   }
+
 });
-
-
-
-
-
-
-
-
